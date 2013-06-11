@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "base"
+  config.vm.network :forwarded_port, guest: 80, host: 8081
+
+  config.vm.synced_folder "www", "/var/www"
+
+  config.vm.provision :chef_solo do |chef|
+
+    #chef.add_recipe("openssl")
+    chef.add_recipe "apt"
+    chef.add_recipe "php"
+    chef.add_recipe("openssl")
+
+    chef.add_recipe "apache2"
+    chef.add_recipe("apache2::mod_php5")
+    chef.add_recipe("apache2::mod_rewrite")
+
+    chef.add_recipe("mysql")
+    chef.add_recipe("mysql::server")
+    chef.add_recipe("memcached")
+    chef.add_recipe("vim")
+    chef.add_recipe("php")
+    chef.add_recipe("php::module_curl")
+    chef.add_recipe("php::module_mysql")
+    chef.add_recipe("php::module_memcache")
+    chef.add_recipe("php::module_sqlite3")
+
+	  chef.json = {
+      :apache => {
+        :default_site_enabled => true },
+      :mysql  => {
+        :server_root_password => '123456',
+        :server_repl_password => '123456',
+        :server_debian_password => '123456'
+      }
+    }
+  end
+
+end
